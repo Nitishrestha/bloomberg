@@ -1,0 +1,30 @@
+version: "3"
+services:
+  bloomberg:
+    image: bloomberg:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=mysqldb
+      - DB_PORT=3306
+      - DB_NAME=FXdeals
+      - DB_USERNAME=user
+      - DB_PASSWORD=user
+    networks:
+      - springmysql-net
+    depends_on:
+      - mysqldb
+
+  mysqldb:
+    image: mysql:5.7
+    networks:
+      - springmysql-net
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=FXdeals
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=user
+
+networks:
+  springmysql-net:
+
