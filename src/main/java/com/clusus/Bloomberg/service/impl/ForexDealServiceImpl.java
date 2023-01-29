@@ -39,19 +39,20 @@ public class ForexDealServiceImpl implements ForexDealService {
     @Override
     public String uploadFile(MultipartFile file) {
         LOGGER.debug("uploadFile(): {}", file.getOriginalFilename());
+        String fileName = file.getOriginalFilename();
         if (file.getSize() > maxFileSize) {
-            LOGGER.debug("uploadFile(): file size exceeded {}", file.getOriginalFilename());
+            LOGGER.debug("uploadFile(): file size exceeded {}", fileName);
             throw new MaxUploadSizeExceededException(maxFileSize);
         }
         if (!CSVHelper.hasCSVFormat(file)) {
-            LOGGER.debug("uploadFile(): expected file format is csv {}", file.getOriginalFilename());
-            throw new InvalidFileFormat(INVALID_FILE_FORMAT + " Given file: " + file.getOriginalFilename() + "!");
+            LOGGER.debug("uploadFile(): expected file format is csv {}", fileName);
+            throw new InvalidFileFormat(INVALID_FILE_FORMAT + " Given file: " + fileName + "!");
         }
         try {
-            List<ForexDealDTO> dealDTOs = CSVHelper.csvToDeals(file.getInputStream(), file.getOriginalFilename());
+            List<ForexDealDTO> dealDTOs = CSVHelper.csvToDeals(file.getInputStream(), fileName);
             List<ForexDeal> deals = mapper.mapToEntities(dealDTOs);
             forexDealRepository.saveAll(deals);
-            LOGGER.debug("uploadFile(): successfully {}", file.getOriginalFilename());
+            LOGGER.debug("uploadFile(): successfully {}", fileName);
             return UPLOAD_SUCCESS + file.getOriginalFilename();
         } catch (IOException e) {
             LOGGER.warn("uploadFile(): {} ", UPLOAD_FAILED + e.getMessage());
